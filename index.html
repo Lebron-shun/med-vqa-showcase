@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>肺部CT影像问答解读系统 - 论文配套展示</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-2: #eef3f7;
+      --text: #17212b;
+      --muted: #657386;
+      --line: #d9e1ea;
+      --green: #16825d;
+      --green-soft: #e5f4ee;
+      --amber: #9a6500;
+      --amber-soft: #fff3d8;
+      --red: #b43a3a;
+      --red-soft: #fde8e8;
+      --blue: #2866a6;
+      --blue-soft: #e7f0fb;
+      --purple: #6c4aa5;
+      --shadow: 0 16px 40px rgba(33, 50, 70, .10);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      letter-spacing: 0;
+    }
+    button, input { font: inherit; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.94);
+      backdrop-filter: blur(10px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .mark {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: linear-gradient(135deg, #16825d, #2866a6);
+      display: grid; place-items: center; color: #fff; font-weight: 800;
+      flex: 0 0 auto;
+    }
+    .brand h1 { margin: 0; font-size: 18px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+    .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .nav a {
+      color: var(--text); text-decoration: none; font-size: 13px;
+      border: 1px solid var(--line); padding: 7px 10px; border-radius: 8px;
+      background: #fff;
+    }
+    .page { max-width: 1440px; margin: 0 auto; padding: 18px 24px 48px; }
+    .hero {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr) 360px;
+      gap: 16px;
+      min-height: calc(100vh - 92px);
+      align-items: stretch;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel.pad { padding: 18px; }
+    .sectionHead {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .sectionHead h2 { margin: 0; font-size: 17px; }
+    .sub { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .caseList { display: grid; gap: 10px; }
+    .caseButton {
+      width: 100%; text-align: left; border: 1px solid var(--line); background: #fff;
+      border-radius: 8px; padding: 12px; cursor: pointer;
+      display: grid; gap: 7px; transition: .16s ease;
+    }
+    .caseButton:hover { transform: translateY(-1px); border-color: #a9bacb; }
+    .caseButton.active { border-color: var(--blue); box-shadow: inset 3px 0 0 var(--blue); background: #f8fbff; }
+    .caseTop { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .caseId { font-size: 22px; font-weight: 800; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 8px; font-size: 12px; border: 1px solid transparent; white-space: nowrap; }
+    .green { background: var(--green-soft); color: var(--green); border-color: #b9dfcf; }
+    .amber { background: var(--amber-soft); color: var(--amber); border-color: #f0d18d; }
+    .red { background: var(--red-soft); color: var(--red); border-color: #efb9b9; }
+    .blue { background: var(--blue-soft); color: var(--blue); border-color: #bed3ea; }
+    .gray { background: #f0f3f6; color: #526070; border-color: #d7dee7; }
+    .metricsGrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 14px; }
+    .metricBox { border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #fbfdff; min-height: 76px; }
+    .metricBox .v { font-size: 24px; font-weight: 800; line-height: 1; }
+    .metricBox .k { margin-top: 6px; color: var(--muted); font-size: 12px; }
+    .viewer { display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+    .viewerHead {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 16px; border-bottom: 1px solid var(--line); background: #fbfdff;
+    }
+    .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .seg button { border: 0; background: transparent; padding: 8px 10px; cursor: pointer; font-size: 13px; color: var(--muted); }
+    .seg button.active { background: var(--blue); color: #fff; }
+    .imageStage {
+      position: relative; min-height: 520px; background: #0f151b; display: grid; place-items: center;
+      overflow: hidden;
+    }
+    .ctImage { max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; display: block; }
+    .sliceMeta {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 12px 16px; border-top: 1px solid var(--line); background: #fff;
+    }
+    .sliderWrap { display: flex; align-items: center; gap: 10px; min-width: 260px; flex: 1; }
+    input[type="range"] { width: 100%; accent-color: var(--blue); }
+    .answerPanel { display: grid; grid-template-rows: auto auto 1fr; min-height: 0; }
+    .summaryBlock { padding: 18px; border-bottom: 1px solid var(--line); }
+    .summaryBlock h2 { margin: 8px 0 8px; font-size: 24px; }
+    .qaBox { display: grid; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+    .qaLine { border-left: 3px solid var(--blue); padding: 8px 10px; background: #f8fbff; border-radius: 0 8px 8px 0; }
+    .qaLine.ref { border-left-color: var(--green); background: #f5fbf8; }
+    .qaLine.pred { border-left-color: var(--purple); background: #f8f5fc; }
+    .label { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+    .text { line-height: 1.65; font-size: 14px; }
+    .miniMetrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; padding: 14px 18px; }
+    .mini { border: 1px solid var(--line); border-radius: 8px; padding: 9px; background: #fff; min-height: 58px; }
+    .mini strong { display: block; font-size: 17px; }
+    .mini span { color: var(--muted); font-size: 12px; }
+    .tabs { margin-top: 18px; }
+    .tabBar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
+    .tabBar button {
+      border: 1px solid var(--line); background: #fff; color: var(--text);
+      padding: 9px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+    }
+    .tabBar button.active { background: var(--text); color: #fff; border-color: var(--text); }
+    .tabBody { background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 18px; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+    .ability { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fbfdff; }
+    .ability h3 { margin: 0 0 8px; font-size: 16px; }
+    .ability p { margin: 6px 0; color: var(--muted); line-height: 1.6; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: left; vertical-align: top; line-height: 1.55; }
+    th { color: #3d4b5c; background: #f7f9fb; font-weight: 700; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { font-size: 12px; padding: 3px 7px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
+    .figGrid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+    .fig { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .fig img { width: 100%; display: block; background: #fff; }
+    .fig div { padding: 10px; color: var(--muted); font-size: 12px; }
+    .notice { margin-top: 16px; color: var(--muted); font-size: 12px; line-height: 1.7; border-top: 1px solid var(--line); padding-top: 12px; }
+    .footer { margin-top: 22px; color: var(--muted); font-size: 12px; text-align: center; }
+    @media (max-width: 1180px) {
+      .hero { grid-template-columns: 280px minmax(0, 1fr); }
+      .answerPanel { grid-column: 1 / -1; }
+      .imageStage { min-height: 460px; }
+    }
+    @media (max-width: 760px) {
+      .topbar { position: static; align-items: flex-start; padding: 12px 14px; }
+      .nav { display: none; }
+      .page { padding: 12px; }
+      .hero, .grid2, .grid3, .figGrid { grid-template-columns: 1fr; }
+      .metricsGrid, .miniMetrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .imageStage { min-height: 360px; }
+      .sliceMeta { display: grid; }
+      .brand h1 { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+  <script id="payload" type="application/json">{"metadata":{"title":"基于多模态大模型的肺部CT影像问答解读系统","version":"paper_showcase_20260615","created_from":"final_report_pdf_and_local_demo_assets","notice":"公开展示页仅包含脱敏病例编号、渲染PNG、问答文本和汇总指标；不包含原始DICOM或服务器路径。"},"report_metrics":[{"label":"DICOM匹配病例","value":"5925","detail":"视觉任务可用病例"},{"label":"清洗报告","value":"6071","detail":"唯一 image_id"},{"label":"中文问答","value":"40861","detail":"覆盖约5925例"},{"label":"V10 evidence charF1","value":"0.8773","detail":"结构化证据转述任务"}],"capabilities":[{"name":"报告结构化与病例登记","evidence":"位置98.96%，大小77.29%，密度/类型94.81%","use":"把自由文本报告整理为位置、大小、密度、征象、层号等字段。","boundary":"弱标签不是医生金标准，适合登记、训练辅助和复核队列。"},{"name":"证据驱动中文问答解释","evidence":"V10 evidence prompt charF1约0.8773","use":"将已验证或结构化证据组织为可读中文回答。","boundary":"证明的是证据转述与语言组织能力，不等同独立读片能力。"},{"name":"临床要素核查","evidence":"位置正确率0.8395，clinical pass 0.5628","use":"并列检查位置、大小、密度、征象命中、漏报和额外输出。","boundary":"复杂同义表达和危险征象仍需医生复核。"},{"name":"缺失输入拒答","evidence":"normal charF1 0.6585；blank 0.0359；text-only 0.0320","use":"无图或仅文本输入时倾向提示证据不足。","boundary":"错患者图像识别仍未稳定解决，需要Evidence Gate。"}],"cases":[{"case_id":"05296","sample_id":"05296__q0006","split":"new_test","story":"正向能力主例","short":"位置 + 病灶 + 大小","accent":"green","takeaway":"围绕明确问题组织左肺、多发小结节和0.6 cm大小信息，适合作为论文展示开场。","question":"左肺（im20,42,45）有何异常？","reference_answer":"余左肺（im20,42,45）多发实性小结节，较大者长径约0.6cm，","model_answer":"左肺（im20,42,45）见结节状致密影，长径约0.6cm。","images":{"overview":"assets/cases/05296/overview.png","dense":"assets/cases/05296/dense.png"},"slices":["assets/cases/05296/slices/slice_01.png","assets/cases/05296/slices/slice_02.png","assets/cases/05296/slices/slice_03.png","assets/cases/05296/slices/slice_04.png","assets/cases/05296/slices/slice_05.png","assets/cases/05296/slices/slice_06.png","assets/cases/05296/slices/slice_07.png","assets/cases/05296/slices/slice_08.png","assets/cases/05296/slices/slice_09.png","assets/cases/05296/slices/slice_10.png","assets/cases/05296/slices/slice_11.png","assets/cases/05296/slices/slice_12.png","assets/cases/05296/slices/slice_13.png","assets/cases/05296/slices/slice_14.png","assets/cases/05296/slices/slice_15.png","assets/cases/05296/slices/slice_16.png"],"slice_rows":[{"index":1,"instance_number":"248","slice_location":"-364.8930"},{"index":2,"instance_number":"233","slice_location":"-346.1430"},{"index":3,"instance_number":"218","slice_location":"-327.3930"},{"index":4,"instance_number":"203","slice_location":"-308.6430"},{"index":5,"instance_number":"188","slice_location":"-289.8930"},{"index":6,"instance_number":"173","slice_location":"-271.1430"},{"index":7,"instance_number":"158","slice_location":"-252.3930"},{"index":8,"instance_number":"143","slice_location":"-233.6430"},{"index":9,"instance_number":"127","slice_location":"-213.6430"},{"index":10,"instance_number":"112","slice_location":"-194.8930"},{"index":11,"instance_number":"97","slice_location":"-176.1430"},{"index":12,"instance_number":"82","slice_location":"-157.3930"},{"index":13,"instance_number":"67","slice_location":"-138.6430"},{"index":14,"instance_number":"52","slice_location":"-119.8930"},{"index":15,"instance_number":"37","slice_location":"-101.1430"},{"index":16,"instance_number":"22","slice_location":"-82.3930"}],"selector_target":"im20、im42、im45","metrics":{"char_f1":"0.7576","term_recall":"67%","location_recall":"100%","density_recall":"50%","sign_recall":"100%","size_match":"100%","blank_text_drop":"0.702"},"matched_terms":["左肺","结节"],"missing_terms":["实性"],"extra_terms":[],"element_rows":[{"要素":"位置","参考":"左肺","预测":"左肺","命中":"左肺","漏报":"无","额外":"无"},{"要素":"密度/病灶","参考":"实性、结节","预测":"结节","命中":"结节","漏报":"实性","额外":"无"},{"要素":"征象","参考":"暂无","预测":"暂无","命中":"暂无","漏报":"无","额外":"无"},{"要素":"尺寸/层号","参考":"0.6cm、20、42、45、im20、im42、im45","预测":"0.6cm、20、42、45、im20、im42、im45","命中":"0.6cm、20、42、45","漏报":"无","额外":"无"}],"stress":{"normal":"左肺（im20,42,45）见结节状致密影，长径约0.6cm。","blank":"当前图像为空白或不可用，无法可靠回答该CT影像问题，建议查看原始CT序列。","text_only":"仅凭文字问题无法判断该病例的具体CT表现，需要结合对应CT图像由医生复核。","wrong_image":"左肺（im20,42,45）见多发结节状致密影，长径约0.5-1.0cm，边界清楚。","hard_wrong_image":"左肺（im20,42,45）见多发结节状致密影，长径约0.5-1.0cm，边界清楚。"},"stress_metrics":{"normal_char_f1":"0.7576","blank_char_f1":"0.0556","text_only_char_f1":"0.0556","wrong_image_char_f1":"0.7013","hard_wrong_image_char_f1":"0.7013"},"qa_rows":[{"sample_id":"05296__q0001","question":"双侧胸腔是否有积液？","answer":"双侧胸腔未见积液。"},{"sample_id":"05296__q0002","question":"两侧胸膜有何改变？","answer":"两侧局部胸膜稍增厚。"},{"sample_id":"05296__q0003","question":"纵隔及两肺门淋巴结情况如何？","answer":"纵隔及两肺门未见明显肿大淋巴结影。"},{"sample_id":"05296__q0004","question":"气管位置及通畅情况如何？","answer":"气管居中，气管、主支气管开口通畅。"},{"sample_id":"05296__q0005","question":"右肺下叶（im44）有什么发现？","answer":"右肺下叶（im44）见亚实性结节，大小约2.8×1.5cm，边缘可见毛刺及胸膜牵拉，内部可见充气支气管影。"},{"sample_id":"05296__q0006","question":"左肺（im20,42,45）有何异常？","answer":"余左肺（im20,42,45）多发实性小结节，较大者长径约0.6cm，"},{"sample_id":"05296__q0007","question":"两肺肺纹理情况如何？","answer":"两肺肺纹理增多，"},{"sample_id":"05296__q0008","question":"两肺是否有纤维条索影？","answer":"两肺见纤维条索影。"}]},{"case_id":"00942","sample_id":"00942__q0004","split":"old_test","story":"临床要素核查","short":"回答 + 复核提醒","accent":"amber","takeaway":"位置、大小、密度等核心要素匹配，同时把额外危险征象标为需医生复核。","question":"右肺上叶后段有什么发现？","reference_answer":"右肺上叶后段可见磨玻璃结节，长径约1.2cm，边界尚清，形态欠规则，边缘分叶，其内密度稍高，邻近胸膜牵拉凹陷。","model_answer":"右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。","images":{"overview":"assets/cases/00942/overview.png","dense":"assets/cases/00942/dense.png"},"slices":["assets/cases/00942/slices/slice_01.png","assets/cases/00942/slices/slice_02.png","assets/cases/00942/slices/slice_03.png","assets/cases/00942/slices/slice_04.png","assets/cases/00942/slices/slice_05.png","assets/cases/00942/slices/slice_06.png","assets/cases/00942/slices/slice_07.png","assets/cases/00942/slices/slice_08.png","assets/cases/00942/slices/slice_09.png","assets/cases/00942/slices/slice_10.png","assets/cases/00942/slices/slice_11.png","assets/cases/00942/slices/slice_12.png","assets/cases/00942/slices/slice_13.png","assets/cases/00942/slices/slice_14.png","assets/cases/00942/slices/slice_15.png","assets/cases/00942/slices/slice_16.png"],"slice_rows":[{"index":1,"instance_number":"300","slice_location":"328.60"},{"index":2,"instance_number":"282","slice_location":"310.60"},{"index":3,"instance_number":"264","slice_location":"292.60"},{"index":4,"instance_number":"245","slice_location":"273.60"},{"index":5,"instance_number":"227","slice_location":"255.60"},{"index":6,"instance_number":"209","slice_location":"237.60"},{"index":7,"instance_number":"191","slice_location":"219.60"},{"index":8,"instance_number":"173","slice_location":"201.60"},{"index":9,"instance_number":"154","slice_location":"182.60"},{"index":10,"instance_number":"136","slice_location":"164.60"},{"index":11,"instance_number":"118","slice_location":"146.60"},{"index":12,"instance_number":"100","slice_location":"128.60"},{"index":13,"instance_number":"82","slice_location":"110.60"},{"index":14,"instance_number":"63","slice_location":"91.60"},{"index":15,"instance_number":"45","slice_location":"73.60"},{"index":16,"instance_number":"27","slice_location":"55.60"}],"selector_target":"参考答案未显式给出 Im/Img 层号","metrics":{"char_f1":"0.7500","term_recall":"90%","location_recall":"100%","density_recall":"100%","sign_recall":"75%","size_match":"100%","blank_text_drop":"0.663"},"matched_terms":["上叶","凹陷","分叶","右肺","后段","磨玻璃","结节","胸膜","胸膜牵拉"],"missing_terms":["形态欠规则"],"extra_terms":["毛刺","边界清"],"element_rows":[{"要素":"位置","参考":"上叶、右肺、后段、胸膜","预测":"上叶、右肺、后段、胸膜","命中":"上叶、右肺、后段、胸膜","漏报":"无","额外":"无"},{"要素":"密度/病灶","参考":"磨玻璃、结节","预测":"磨玻璃、结节","命中":"磨玻璃、结节","漏报":"无","额外":"无"},{"要素":"征象","参考":"凹陷、分叶、形态欠规则、胸膜牵拉","预测":"凹陷、分叶、毛刺、胸膜牵拉、边界清","命中":"凹陷、分叶、胸膜牵拉","漏报":"形态欠规则","额外":"毛刺、边界清"},{"要素":"尺寸/层号","参考":"1.2cm","预测":"1.2cm","命中":"1.2cm","漏报":"无","额外":"无"}],"stress":{"normal":"右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。","blank":"当前图像为空白或不可用，无法可靠回答该CT影像问题，建议查看原始CT序列。","text_only":"仅凭文字问题无法判断该病例的具体CT表现，需要结合对应CT图像由医生复核。","wrong_image":"右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。","hard_wrong_image":"右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。"},"stress_metrics":{"normal_char_f1":"0.7500","blank_char_f1":"0.0870","text_only_char_f1":"0.0652","wrong_image_char_f1":"0.7500","hard_wrong_image_char_f1":"0.7500"},"qa_rows":[{"sample_id":"00942__q0001","question":"胸膜有什么异常？","answer":"双侧胸膜局部增厚。"},{"sample_id":"00942__q0002","question":"纵隔淋巴结情况如何？","answer":"纵隔内未见明显肿大的淋巴结。"},{"sample_id":"00942__q0003","question":"前纵隔有什么发现？","answer":"前纵隔见一长径约1.5cm的类圆形软组织密度影，中央见一条状低密度影。"},{"sample_id":"00942__q0004","question":"右肺上叶后段有什么发现？","answer":"右肺上叶后段可见磨玻璃结节，长径约1.2cm，边界尚清，形态欠规则，边缘分叶，其内密度稍高，邻近胸膜牵拉凹陷。"},{"sample_id":"00942__q0005","question":"双肺透亮度表现如何？","answer":"双肺透亮度增高，其内可见多个囊状无肺纹理透亮区。"},{"sample_id":"00942__q0006","question":"右肺中叶内侧段有什么异常？","answer":"右肺中叶内侧段可见软组织密度影，长径约2.5cm，边界尚清，形态不规则，边缘分叶及毛刺，邻近胸膜多点牵拉凹陷。"}]},{"case_id":"01096","sample_id":"01096__q0006","split":"old_test","story":"安全边界样例","short":"缺证拒答 + Evidence Gate","accent":"red","takeaway":"正确图像下能命中主要要素，但额外危险征象和错图问题说明系统必须保留安全门控。","question":"右肺上叶前段有什么异常？","reference_answer":"右肺上叶前段见一混杂磨玻璃密度结节影（Img96），长径约1.2cm，边界清，边缘见分叶、毛糙，内见扭曲扩张的支气管影。","model_answer":"右肺上叶前段见一长径约1.2cm的磨玻璃结节影，边界清楚，边缘见分叶，可见毛刺，可见胸膜牵拉凹陷。","images":{"overview":"assets/cases/01096/overview.png","dense":"assets/cases/01096/dense.png"},"slices":["assets/cases/01096/slices/slice_01.png","assets/cases/01096/slices/slice_02.png","assets/cases/01096/slices/slice_03.png","assets/cases/01096/slices/slice_04.png","assets/cases/01096/slices/slice_05.png","assets/cases/01096/slices/slice_06.png","assets/cases/01096/slices/slice_07.png","assets/cases/01096/slices/slice_08.png","assets/cases/01096/slices/slice_09.png","assets/cases/01096/slices/slice_10.png","assets/cases/01096/slices/slice_11.png","assets/cases/01096/slices/slice_12.png","assets/cases/01096/slices/slice_13.png","assets/cases/01096/slices/slice_14.png","assets/cases/01096/slices/slice_15.png","assets/cases/01096/slices/slice_16.png"],"slice_rows":[{"index":1,"instance_number":"277","slice_location":"-31.30"},{"index":2,"instance_number":"260","slice_location":"-48.30"},{"index":3,"instance_number":"243","slice_location":"-65.30"},{"index":4,"instance_number":"227","slice_location":"-81.30"},{"index":5,"instance_number":"210","slice_location":"-98.30"},{"index":6,"instance_number":"193","slice_location":"-115.30"},{"index":7,"instance_number":"176","slice_location":"-132.30"},{"index":8,"instance_number":"159","slice_location":"-149.30"},{"index":9,"instance_number":"143","slice_location":"-165.30"},{"index":10,"instance_number":"126","slice_location":"-182.30"},{"index":11,"instance_number":"109","slice_location":"-199.30"},{"index":12,"instance_number":"92","slice_location":"-216.30"},{"index":13,"instance_number":"75","slice_location":"-233.30"},{"index":14,"instance_number":"59","slice_location":"-249.30"},{"index":15,"instance_number":"42","slice_location":"-266.30"},{"index":16,"instance_number":"25","slice_location":"-283.30"}],"selector_target":"img96","metrics":{"char_f1":"0.6972","term_recall":"78%","location_recall":"100%","density_recall":"67%","sign_recall":"67%","size_match":"100%","blank_text_drop":"0.594"},"matched_terms":["上叶","分叶","前段","右肺","磨玻璃","结节","边界清"],"missing_terms":["毛糙","混杂磨玻璃"],"extra_terms":["凹陷","毛刺","胸膜","胸膜牵拉"],"element_rows":[{"要素":"位置","参考":"上叶、前段、右肺","预测":"上叶、前段、右肺、胸膜","命中":"上叶、前段、右肺","漏报":"无","额外":"胸膜"},{"要素":"密度/病灶","参考":"混杂磨玻璃、磨玻璃、结节","预测":"磨玻璃、结节","命中":"磨玻璃、结节","漏报":"混杂磨玻璃","额外":"无"},{"要素":"征象","参考":"分叶、毛糙、边界清","预测":"凹陷、分叶、毛刺、胸膜牵拉、边界清","命中":"分叶、边界清","漏报":"毛糙","额外":"凹陷、毛刺、胸膜牵拉"},{"要素":"尺寸/层号","参考":"1.2cm、96、img96","预测":"1.2cm","命中":"1.2cm","漏报":"96","额外":"无"}],"stress":{"normal":"右肺上叶前段见一长径约1.2cm的磨玻璃结节影，边界清楚，边缘见分叶，可见毛刺，可见胸膜牵拉凹陷。","blank":"当前图像为空白或不可用，无法可靠回答该CT影像问题，建议查看原始CT序列。","text_only":"仅凭文字问题无法判断该病例的具体CT表现，需要结合对应CT图像由医生复核。","wrong_image":"右肺上叶前段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。","hard_wrong_image":"右肺上叶前段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。"},"stress_metrics":{"normal_char_f1":"0.6972","blank_char_f1":"0.1031","text_only_char_f1":"0.0825","wrong_image_char_f1":"0.6789","hard_wrong_image_char_f1":"0.6789"},"qa_rows":[{"sample_id":"01096__q0001","question":"胸腔和胸膜表现如何？","answer":"双侧胸腔无积液，双侧胸膜局部增厚。"},{"sample_id":"01096__q0002","question":"纵隔淋巴结情况如何？","answer":"纵隔内未见明显肿大的淋巴结。"},{"sample_id":"01096__q0003","question":"支气管有何异常？","answer":"双肺下叶部分支气管轻度扩张，左肺下叶部分支气管内见片状密度增高影。"},{"sample_id":"01096__q0004","question":"右肺下叶有什么发现？","answer":"右肺下叶见斑点状致密影。"},{"sample_id":"01096__q0005","question":"双肺还有哪些结节或密度影？","answer":"双肺可见数个磨玻璃密度影及实性小结节影，长径均小于0.6cm，边界清。"},{"sample_id":"01096__q0006","question":"右肺上叶前段有什么异常？","answer":"右肺上叶前段见一混杂磨玻璃密度结节影（Img96），长径约1.2cm，边界清，边缘见分叶、毛糙，内见扭曲扩张的支气管影。"},{"sample_id":"01096__q0007","question":"双肺实质有其他异常表现吗？","answer":"双肺见散在斑片、条索影。"}]}],"figures":[{"name":"Figure 1 clinician review workflow","path":"assets/figures/Figure_1_clinician_review_workflow.png"},{"name":"Figure 2 structured coverage review queue","path":"assets/figures/Figure_2_structured_coverage_review_queue.png"},{"name":"Figure 3 positive case 05296","path":"assets/figures/Figure_3_positive_case_05296.png"},{"name":"Figure 4 clinical element review 00942","path":"assets/figures/Figure_4_clinical_element_review_00942.png"},{"name":"Figure 5 missing evidence refusal","path":"assets/figures/Figure_5_missing_evidence_refusal.png"},{"name":"Figure 6 real case visual safety","path":"assets/figures/Figure_6_real_case_visual_safety.png"},{"name":"Figure 7 evidence gate admission status","path":"assets/figures/Figure_7_evidence_gate_admission_status.png"},{"name":"Table 1 clinical utility boundary","path":"assets/figures/Table_1_clinical_utility_boundary.png"}]}</script>
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark">CT</div>
+      <div>
+        <h1>肺部CT影像问答解读系统</h1>
+        <p>论文配套在线展示 · 脱敏静态版 · 医生复核辅助定位</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#cases">病例路线</a>
+      <a href="#capabilities">能力总览</a>
+      <a href="#qa">全部问答</a>
+      <a href="#figures">论文图表</a>
+    </nav>
+  </header>
+  <main class="page">
+    <section class="hero" id="cases">
+      <aside class="panel pad">
+        <div class="sectionHead">
+          <h2>文章病例路线</h2>
+          <span class="tag blue">3分钟演示</span>
+        </div>
+        <p class="sub">按最终报告顺序展示：先说明模型能做什么，再展示核查能力，最后解释为什么需要安全门控。</p>
+        <div class="caseList" id="caseList"></div>
+        <div class="metricsGrid" id="reportMetrics"></div>
+        <div class="notice">本页展示研究原型与离线预测结果，不提供临床诊断服务。所有结论必须由放射科医生结合原始DICOM复核。</div>
+      </aside>
+
+      <section class="panel viewer">
+        <div class="viewerHead">
+          <div>
+            <strong id="viewerTitle">病例影像</strong>
+            <div class="sub" id="viewerSub">overview / dense montage / DICOM-derived slices</div>
+          </div>
+          <div class="seg" id="viewMode">
+            <button data-mode="overview" class="active">Overview</button>
+            <button data-mode="dense">Dense</button>
+            <button data-mode="slice">Slice</button>
+          </div>
+        </div>
+        <div class="imageStage">
+          <img id="ctImage" class="ctImage" alt="CT montage or rendered slice" />
+        </div>
+        <div class="sliceMeta">
+          <div>
+            <strong id="sliceLabel">Montage</strong>
+            <div class="sub" id="sliceInfo">渲染自DICOM的公开PNG，不暴露原始DICOM。</div>
+          </div>
+          <div class="sliderWrap">
+            <span class="sub">Slice</span>
+            <input id="sliceSlider" type="range" min="1" max="1" value="1" />
+            <span id="sliceCount" class="sub">1/1</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel answerPanel">
+        <div class="summaryBlock">
+          <span id="caseTag" class="tag green">正向能力</span>
+          <h2 id="caseTitle">05296</h2>
+          <div class="sub" id="caseTakeaway"></div>
+        </div>
+        <div class="qaBox">
+          <div class="qaLine">
+            <div class="label">临床问题</div>
+            <div class="text" id="question"></div>
+          </div>
+          <div class="qaLine ref">
+            <div class="label">参考答案</div>
+            <div class="text" id="reference"></div>
+          </div>
+          <div class="qaLine pred">
+            <div class="label">模型回答</div>
+            <div class="text" id="prediction"></div>
+          </div>
+        </div>
+        <div class="miniMetrics" id="caseMetrics"></div>
+      </aside>
+    </section>
+
+    <section class="tabs">
+      <div class="tabBar" id="tabs">
+        <button data-tab="capabilities" class="active">能力总览</button>
+        <button data-tab="elements">临床要素核查</button>
+        <button data-tab="qa">全部问答</button>
+        <button data-tab="safety">缺证拒答与门控</button>
+        <button data-tab="figures">论文图表</button>
+      </div>
+      <div class="tabBody" id="tabBody"></div>
+    </section>
+    <div class="footer">paper_showcase_20260615 · static public package · no raw DICOM included</div>
+  </main>
+  <script>
+    const data = JSON.parse(document.getElementById('payload').textContent);
+    let activeCase = 0;
+    let activeMode = 'overview';
+    let activeTab = 'capabilities';
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const badgeClass = (accent) => accent === 'green' ? 'green' : accent === 'amber' ? 'amber' : accent === 'red' ? 'red' : 'blue';
+
+    function renderCaseList() {
+      $('caseList').innerHTML = data.cases.map((c, i) => `
+        <button class="caseButton ${i === activeCase ? 'active' : ''}" data-case="${i}">
+          <div class="caseTop">
+            <span class="caseId">${esc(c.case_id)}</span>
+            <span class="tag ${badgeClass(c.accent)}">${esc(c.story)}</span>
+          </div>
+          <div><strong>${esc(c.short)}</strong></div>
+          <div class="sub">${esc(c.takeaway)}</div>
+        </button>
+      `).join('');
+      document.querySelectorAll('[data-case]').forEach(btn => btn.addEventListener('click', () => {
+        activeCase = Number(btn.dataset.case);
+        activeMode = 'overview';
+        renderAll();
+      }));
+    }
+
+    function renderReportMetrics() {
+      $('reportMetrics').innerHTML = data.report_metrics.map(m => `
+        <div class="metricBox">
+          <div class="v">${esc(m.value)}</div>
+          <div class="k">${esc(m.label)}<br>${esc(m.detail)}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderViewer() {
+      const c = data.cases[activeCase];
+      $('viewerTitle').textContent = `病例 ${c.case_id} 影像证据`;
+      $('viewerSub').textContent = `${c.split} · target ${c.selector_target}`;
+      document.querySelectorAll('#viewMode button').forEach(b => b.classList.toggle('active', b.dataset.mode === activeMode));
+      const slider = $('sliceSlider');
+      slider.max = Math.max(1, c.slices.length);
+      if (Number(slider.value) > c.slices.length) slider.value = 1;
+      if (activeMode === 'slice') {
+        const idx = Math.max(0, Number(slider.value) - 1);
+        $('ctImage').src = c.slices[idx] || c.images.overview;
+        const row = c.slice_rows[idx] || {};
+        $('sliceLabel').textContent = `Slice ${idx + 1} / ${c.slices.length}`;
+        $('sliceInfo').textContent = `Instance ${row.instance_number || '暂无'} · Location ${row.slice_location || '暂无'} · 原始DICOM不随网页发布`;
+        $('sliceCount').textContent = `${idx + 1}/${c.slices.length}`;
+        slider.disabled = false;
+      } else {
+        $('ctImage').src = activeMode === 'overview' ? c.images.overview : c.images.dense;
+        $('sliceLabel').textContent = activeMode === 'overview' ? 'Overview montage' : 'Dense axial montage';
+        $('sliceInfo').textContent = '渲染自DICOM的病例级PNG，用于论文展示和病例复盘。';
+        $('sliceCount').textContent = `1/${c.slices.length}`;
+        slider.disabled = true;
+      }
+    }
+
+    function renderAnswer() {
+      const c = data.cases[activeCase];
+      $('caseTag').className = `tag ${badgeClass(c.accent)}`;
+      $('caseTag').textContent = c.story;
+      $('caseTitle').textContent = `病例 ${c.case_id}`;
+      $('caseTakeaway').textContent = c.takeaway;
+      $('question').textContent = c.question;
+      $('reference').textContent = c.reference_answer;
+      $('prediction').textContent = c.model_answer;
+      const metrics = [
+        ['charF1', c.metrics.char_f1],
+        ['位置命中', c.metrics.location_recall],
+        ['大小命中', c.metrics.size_match],
+        ['密度命中', c.metrics.density_recall],
+        ['征象命中', c.metrics.sign_recall],
+        ['缺证降幅', c.metrics.blank_text_drop],
+      ];
+      $('caseMetrics').innerHTML = metrics.map(([k,v]) => `<div class="mini"><strong>${esc(v)}</strong><span>${esc(k)}</span></div>`).join('');
+    }
+
+    function chips(items, cls='chip') {
+      if (!items || !items.length) return '<span class="sub">无</span>';
+      return `<div class="chips">${items.map(x => `<span class="${cls}">${esc(x)}</span>`).join('')}</div>`;
+    }
+
+    function renderCapabilitiesTab() {
+      return `
+        <section id="capabilities">
+          <div class="sectionHead"><h2>报告中的正向能力</h2><span class="tag blue">不是自动诊断</span></div>
+          <div class="grid2">
+            ${data.capabilities.map(a => `
+              <div class="ability">
+                <h3>${esc(a.name)}</h3>
+                <p><strong>已有证据：</strong>${esc(a.evidence)}</p>
+                <p><strong>展示用途：</strong>${esc(a.use)}</p>
+                <p><strong>边界：</strong>${esc(a.boundary)}</p>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderElementsTab() {
+      const c = data.cases[activeCase];
+      return `
+        <section>
+          <div class="sectionHead"><h2>病例 ${esc(c.case_id)} 临床要素核查</h2><span class="tag ${badgeClass(c.accent)}">${esc(c.story)}</span></div>
+          <div class="grid3" style="margin-bottom:16px;">
+            <div class="ability"><h3>命中要素</h3>${chips(c.matched_terms)}</div>
+            <div class="ability"><h3>参考中未覆盖</h3>${chips(c.missing_terms)}</div>
+            <div class="ability"><h3>额外输出</h3>${chips(c.extra_terms)}</div>
+          </div>
+          <table>
+            <thead><tr><th>要素</th><th>参考</th><th>预测</th><th>命中</th><th>漏报</th><th>额外</th></tr></thead>
+            <tbody>
+              ${(c.element_rows || []).map(r => `
+                <tr>
+                  <td>${esc(r['要素'])}</td><td>${esc(r['参考'])}</td><td>${esc(r['预测'])}</td>
+                  <td>${esc(r['命中'])}</td><td>${esc(r['漏报'])}</td><td>${esc(r['额外'])}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </section>
+      `;
+    }
+
+    function renderQaTab() {
+      const c = data.cases[activeCase];
+      return `
+        <section id="qa">
+          <div class="sectionHead"><h2>病例 ${esc(c.case_id)} 全部原始问答</h2><span class="tag gray">${c.qa_rows.length} 对</span></div>
+          <table>
+            <thead><tr><th>sample_id</th><th>问题</th><th>参考答案</th></tr></thead>
+            <tbody>
+              ${c.qa_rows.map(row => `<tr><td>${esc(row.sample_id)}</td><td>${esc(row.question)}</td><td>${esc(row.answer)}</td></tr>`).join('')}
+            </tbody>
+          </table>
+          <div class="notice">当前公开页仅展示报告选用主问答的模型预测；其余问答保留为病例材料，后续可用统一模型补跑后回填。</div>
+        </section>
+      `;
+    }
+
+    function renderSafetyTab() {
+      const c = data.cases[activeCase];
+      return `
+        <section>
+          <div class="sectionHead"><h2>缺证拒答与Evidence Gate</h2><span class="tag red">安全说明</span></div>
+          <div class="grid2">
+            <div class="ability">
+              <h3>空白图像</h3>
+              <p>${esc(c.stress.blank || '暂无')}</p>
+              <p><strong>charF1：</strong>${esc(c.stress_metrics.blank_char_f1)}</p>
+            </div>
+            <div class="ability">
+              <h3>仅文本输入</h3>
+              <p>${esc(c.stress.text_only || '暂无')}</p>
+              <p><strong>charF1：</strong>${esc(c.stress_metrics.text_only_char_f1)}</p>
+            </div>
+            <div class="ability">
+              <h3>错误患者图像</h3>
+              <p>${esc(c.stress.wrong_image || '暂无')}</p>
+              <p><strong>charF1：</strong>${esc(c.stress_metrics.wrong_image_char_f1)}</p>
+            </div>
+            <div class="ability">
+              <h3>门控口径</h3>
+              <p>报告将该能力定位为辅助问答、病例教学和安全质控；未通过门控的局部证据不进入最终生成链路。</p>
+              <p><strong>公开表达：</strong>可提示复核，不能替代医生诊断。</p>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderFiguresTab() {
+      return `
+        <section id="figures">
+          <div class="sectionHead"><h2>论文图表配套浏览</h2><span class="tag blue">${data.figures.length} 张</span></div>
+          <div class="figGrid">
+            ${data.figures.map(f => `<figure class="fig"><img src="${esc(f.path)}" alt="${esc(f.name)}"><div>${esc(f.name)}</div></figure>`).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderTab() {
+      const map = {
+        capabilities: renderCapabilitiesTab,
+        elements: renderElementsTab,
+        qa: renderQaTab,
+        safety: renderSafetyTab,
+        figures: renderFiguresTab,
+      };
+      $('tabBody').innerHTML = map[activeTab]();
+      document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === activeTab));
+    }
+
+    function renderAll() {
+      renderCaseList();
+      renderReportMetrics();
+      renderViewer();
+      renderAnswer();
+      renderTab();
+    }
+
+    document.querySelectorAll('#viewMode button').forEach(btn => btn.addEventListener('click', () => {
+      activeMode = btn.dataset.mode;
+      $('sliceSlider').value = 1;
+      renderViewer();
+    }));
+    $('sliceSlider').addEventListener('input', renderViewer);
+    document.querySelectorAll('#tabs button').forEach(btn => btn.addEventListener('click', () => {
+      activeTab = btn.dataset.tab;
+      renderTab();
+      document.querySelector('.tabs').scrollIntoView({behavior: 'smooth', block: 'start'});
+    }));
+
+    renderAll();
+  </script>
+</body>
+</html>
