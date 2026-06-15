@@ -1,0 +1,770 @@
+{
+  "metadata": {
+    "title": "基于多模态大模型的肺部CT影像问答解读系统",
+    "version": "paper_showcase_20260615",
+    "created_from": "final_report_pdf_and_local_demo_assets",
+    "notice": "公开展示页仅包含脱敏病例编号、渲染PNG、问答文本和汇总指标；不包含原始DICOM或服务器路径。"
+  },
+  "report_metrics": [
+    {
+      "label": "DICOM匹配病例",
+      "value": "5925",
+      "detail": "视觉任务可用病例"
+    },
+    {
+      "label": "清洗报告",
+      "value": "6071",
+      "detail": "唯一 image_id"
+    },
+    {
+      "label": "中文问答",
+      "value": "40861",
+      "detail": "覆盖约5925例"
+    },
+    {
+      "label": "V10 evidence charF1",
+      "value": "0.8773",
+      "detail": "结构化证据转述任务"
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "报告结构化与病例登记",
+      "evidence": "位置98.96%，大小77.29%，密度/类型94.81%",
+      "use": "把自由文本报告整理为位置、大小、密度、征象、层号等字段。",
+      "boundary": "弱标签不是医生金标准，适合登记、训练辅助和复核队列。"
+    },
+    {
+      "name": "证据驱动中文问答解释",
+      "evidence": "V10 evidence prompt charF1约0.8773",
+      "use": "将已验证或结构化证据组织为可读中文回答。",
+      "boundary": "证明的是证据转述与语言组织能力，不等同独立读片能力。"
+    },
+    {
+      "name": "临床要素核查",
+      "evidence": "位置正确率0.8395，clinical pass 0.5628",
+      "use": "并列检查位置、大小、密度、征象命中、漏报和额外输出。",
+      "boundary": "复杂同义表达和危险征象仍需医生复核。"
+    },
+    {
+      "name": "缺失输入拒答",
+      "evidence": "normal charF1 0.6585；blank 0.0359；text-only 0.0320",
+      "use": "无图或仅文本输入时倾向提示证据不足。",
+      "boundary": "错患者图像识别仍未稳定解决，需要Evidence Gate。"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "05296",
+      "sample_id": "05296__q0006",
+      "split": "new_test",
+      "story": "正向能力主例",
+      "short": "位置 + 病灶 + 大小",
+      "accent": "green",
+      "takeaway": "围绕明确问题组织左肺、多发小结节和0.6 cm大小信息，适合作为论文展示开场。",
+      "question": "左肺（im20,42,45）有何异常？",
+      "reference_answer": "余左肺（im20,42,45）多发实性小结节，较大者长径约0.6cm，",
+      "model_answer": "左肺（im20,42,45）见结节状致密影，长径约0.6cm。",
+      "images": {
+        "overview": "assets/cases/05296/overview.png",
+        "dense": "assets/cases/05296/dense.png"
+      },
+      "slices": [
+        "assets/cases/05296/slices/slice_01.png",
+        "assets/cases/05296/slices/slice_02.png",
+        "assets/cases/05296/slices/slice_03.png",
+        "assets/cases/05296/slices/slice_04.png",
+        "assets/cases/05296/slices/slice_05.png",
+        "assets/cases/05296/slices/slice_06.png",
+        "assets/cases/05296/slices/slice_07.png",
+        "assets/cases/05296/slices/slice_08.png",
+        "assets/cases/05296/slices/slice_09.png",
+        "assets/cases/05296/slices/slice_10.png",
+        "assets/cases/05296/slices/slice_11.png",
+        "assets/cases/05296/slices/slice_12.png",
+        "assets/cases/05296/slices/slice_13.png",
+        "assets/cases/05296/slices/slice_14.png",
+        "assets/cases/05296/slices/slice_15.png",
+        "assets/cases/05296/slices/slice_16.png"
+      ],
+      "slice_rows": [
+        {
+          "index": 1,
+          "instance_number": "248",
+          "slice_location": "-364.8930"
+        },
+        {
+          "index": 2,
+          "instance_number": "233",
+          "slice_location": "-346.1430"
+        },
+        {
+          "index": 3,
+          "instance_number": "218",
+          "slice_location": "-327.3930"
+        },
+        {
+          "index": 4,
+          "instance_number": "203",
+          "slice_location": "-308.6430"
+        },
+        {
+          "index": 5,
+          "instance_number": "188",
+          "slice_location": "-289.8930"
+        },
+        {
+          "index": 6,
+          "instance_number": "173",
+          "slice_location": "-271.1430"
+        },
+        {
+          "index": 7,
+          "instance_number": "158",
+          "slice_location": "-252.3930"
+        },
+        {
+          "index": 8,
+          "instance_number": "143",
+          "slice_location": "-233.6430"
+        },
+        {
+          "index": 9,
+          "instance_number": "127",
+          "slice_location": "-213.6430"
+        },
+        {
+          "index": 10,
+          "instance_number": "112",
+          "slice_location": "-194.8930"
+        },
+        {
+          "index": 11,
+          "instance_number": "97",
+          "slice_location": "-176.1430"
+        },
+        {
+          "index": 12,
+          "instance_number": "82",
+          "slice_location": "-157.3930"
+        },
+        {
+          "index": 13,
+          "instance_number": "67",
+          "slice_location": "-138.6430"
+        },
+        {
+          "index": 14,
+          "instance_number": "52",
+          "slice_location": "-119.8930"
+        },
+        {
+          "index": 15,
+          "instance_number": "37",
+          "slice_location": "-101.1430"
+        },
+        {
+          "index": 16,
+          "instance_number": "22",
+          "slice_location": "-82.3930"
+        }
+      ],
+      "selector_target": "im20、im42、im45",
+      "metrics": {
+        "char_f1": "0.7576",
+        "term_recall": "67%",
+        "location_recall": "100%",
+        "density_recall": "50%",
+        "sign_recall": "100%",
+        "size_match": "100%",
+        "blank_text_drop": "0.702"
+      },
+      "matched_terms": [
+        "左肺",
+        "结节"
+      ],
+      "missing_terms": [
+        "实性"
+      ],
+      "extra_terms": [],
+      "element_rows": [
+        {
+          "要素": "位置",
+          "参考": "左肺",
+          "预测": "左肺",
+          "命中": "左肺",
+          "漏报": "无",
+          "额外": "无"
+        },
+        {
+          "要素": "密度/病灶",
+          "参考": "实性、结节",
+          "预测": "结节",
+          "命中": "结节",
+          "漏报": "实性",
+          "额外": "无"
+        },
+        {
+          "要素": "征象",
+          "参考": "暂无",
+          "预测": "暂无",
+          "命中": "暂无",
+          "漏报": "无",
+          "额外": "无"
+        },
+        {
+          "要素": "尺寸/层号",
+          "参考": "0.6cm、20、42、45、im20、im42、im45",
+          "预测": "0.6cm、20、42、45、im20、im42、im45",
+          "命中": "0.6cm、20、42、45",
+          "漏报": "无",
+          "额外": "无"
+        }
+      ],
+      "stress": {
+        "normal": "左肺（im20,42,45）见结节状致密影，长径约0.6cm。",
+        "blank": "当前图像为空白或不可用，无法可靠回答该CT影像问题，建议查看原始CT序列。",
+        "text_only": "仅凭文字问题无法判断该病例的具体CT表现，需要结合对应CT图像由医生复核。",
+        "wrong_image": "左肺（im20,42,45）见多发结节状致密影，长径约0.5-1.0cm，边界清楚。",
+        "hard_wrong_image": "左肺（im20,42,45）见多发结节状致密影，长径约0.5-1.0cm，边界清楚。"
+      },
+      "stress_metrics": {
+        "normal_char_f1": "0.7576",
+        "blank_char_f1": "0.0556",
+        "text_only_char_f1": "0.0556",
+        "wrong_image_char_f1": "0.7013",
+        "hard_wrong_image_char_f1": "0.7013"
+      },
+      "qa_rows": [
+        {
+          "sample_id": "05296__q0001",
+          "question": "双侧胸腔是否有积液？",
+          "answer": "双侧胸腔未见积液。"
+        },
+        {
+          "sample_id": "05296__q0002",
+          "question": "两侧胸膜有何改变？",
+          "answer": "两侧局部胸膜稍增厚。"
+        },
+        {
+          "sample_id": "05296__q0003",
+          "question": "纵隔及两肺门淋巴结情况如何？",
+          "answer": "纵隔及两肺门未见明显肿大淋巴结影。"
+        },
+        {
+          "sample_id": "05296__q0004",
+          "question": "气管位置及通畅情况如何？",
+          "answer": "气管居中，气管、主支气管开口通畅。"
+        },
+        {
+          "sample_id": "05296__q0005",
+          "question": "右肺下叶（im44）有什么发现？",
+          "answer": "右肺下叶（im44）见亚实性结节，大小约2.8×1.5cm，边缘可见毛刺及胸膜牵拉，内部可见充气支气管影。"
+        },
+        {
+          "sample_id": "05296__q0006",
+          "question": "左肺（im20,42,45）有何异常？",
+          "answer": "余左肺（im20,42,45）多发实性小结节，较大者长径约0.6cm，"
+        },
+        {
+          "sample_id": "05296__q0007",
+          "question": "两肺肺纹理情况如何？",
+          "answer": "两肺肺纹理增多，"
+        },
+        {
+          "sample_id": "05296__q0008",
+          "question": "两肺是否有纤维条索影？",
+          "answer": "两肺见纤维条索影。"
+        }
+      ]
+    },
+    {
+      "case_id": "00942",
+      "sample_id": "00942__q0004",
+      "split": "old_test",
+      "story": "临床要素核查",
+      "short": "回答 + 复核提醒",
+      "accent": "amber",
+      "takeaway": "位置、大小、密度等核心要素匹配，同时把额外危险征象标为需医生复核。",
+      "question": "右肺上叶后段有什么发现？",
+      "reference_answer": "右肺上叶后段可见磨玻璃结节，长径约1.2cm，边界尚清，形态欠规则，边缘分叶，其内密度稍高，邻近胸膜牵拉凹陷。",
+      "model_answer": "右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。",
+      "images": {
+        "overview": "assets/cases/00942/overview.png",
+        "dense": "assets/cases/00942/dense.png"
+      },
+      "slices": [
+        "assets/cases/00942/slices/slice_01.png",
+        "assets/cases/00942/slices/slice_02.png",
+        "assets/cases/00942/slices/slice_03.png",
+        "assets/cases/00942/slices/slice_04.png",
+        "assets/cases/00942/slices/slice_05.png",
+        "assets/cases/00942/slices/slice_06.png",
+        "assets/cases/00942/slices/slice_07.png",
+        "assets/cases/00942/slices/slice_08.png",
+        "assets/cases/00942/slices/slice_09.png",
+        "assets/cases/00942/slices/slice_10.png",
+        "assets/cases/00942/slices/slice_11.png",
+        "assets/cases/00942/slices/slice_12.png",
+        "assets/cases/00942/slices/slice_13.png",
+        "assets/cases/00942/slices/slice_14.png",
+        "assets/cases/00942/slices/slice_15.png",
+        "assets/cases/00942/slices/slice_16.png"
+      ],
+      "slice_rows": [
+        {
+          "index": 1,
+          "instance_number": "300",
+          "slice_location": "328.60"
+        },
+        {
+          "index": 2,
+          "instance_number": "282",
+          "slice_location": "310.60"
+        },
+        {
+          "index": 3,
+          "instance_number": "264",
+          "slice_location": "292.60"
+        },
+        {
+          "index": 4,
+          "instance_number": "245",
+          "slice_location": "273.60"
+        },
+        {
+          "index": 5,
+          "instance_number": "227",
+          "slice_location": "255.60"
+        },
+        {
+          "index": 6,
+          "instance_number": "209",
+          "slice_location": "237.60"
+        },
+        {
+          "index": 7,
+          "instance_number": "191",
+          "slice_location": "219.60"
+        },
+        {
+          "index": 8,
+          "instance_number": "173",
+          "slice_location": "201.60"
+        },
+        {
+          "index": 9,
+          "instance_number": "154",
+          "slice_location": "182.60"
+        },
+        {
+          "index": 10,
+          "instance_number": "136",
+          "slice_location": "164.60"
+        },
+        {
+          "index": 11,
+          "instance_number": "118",
+          "slice_location": "146.60"
+        },
+        {
+          "index": 12,
+          "instance_number": "100",
+          "slice_location": "128.60"
+        },
+        {
+          "index": 13,
+          "instance_number": "82",
+          "slice_location": "110.60"
+        },
+        {
+          "index": 14,
+          "instance_number": "63",
+          "slice_location": "91.60"
+        },
+        {
+          "index": 15,
+          "instance_number": "45",
+          "slice_location": "73.60"
+        },
+        {
+          "index": 16,
+          "instance_number": "27",
+          "slice_location": "55.60"
+        }
+      ],
+      "selector_target": "参考答案未显式给出 Im/Img 层号",
+      "metrics": {
+        "char_f1": "0.7500",
+        "term_recall": "90%",
+        "location_recall": "100%",
+        "density_recall": "100%",
+        "sign_recall": "75%",
+        "size_match": "100%",
+        "blank_text_drop": "0.663"
+      },
+      "matched_terms": [
+        "上叶",
+        "凹陷",
+        "分叶",
+        "右肺",
+        "后段",
+        "磨玻璃",
+        "结节",
+        "胸膜",
+        "胸膜牵拉"
+      ],
+      "missing_terms": [
+        "形态欠规则"
+      ],
+      "extra_terms": [
+        "毛刺",
+        "边界清"
+      ],
+      "element_rows": [
+        {
+          "要素": "位置",
+          "参考": "上叶、右肺、后段、胸膜",
+          "预测": "上叶、右肺、后段、胸膜",
+          "命中": "上叶、右肺、后段、胸膜",
+          "漏报": "无",
+          "额外": "无"
+        },
+        {
+          "要素": "密度/病灶",
+          "参考": "磨玻璃、结节",
+          "预测": "磨玻璃、结节",
+          "命中": "磨玻璃、结节",
+          "漏报": "无",
+          "额外": "无"
+        },
+        {
+          "要素": "征象",
+          "参考": "凹陷、分叶、形态欠规则、胸膜牵拉",
+          "预测": "凹陷、分叶、毛刺、胸膜牵拉、边界清",
+          "命中": "凹陷、分叶、胸膜牵拉",
+          "漏报": "形态欠规则",
+          "额外": "毛刺、边界清"
+        },
+        {
+          "要素": "尺寸/层号",
+          "参考": "1.2cm",
+          "预测": "1.2cm",
+          "命中": "1.2cm",
+          "漏报": "无",
+          "额外": "无"
+        }
+      ],
+      "stress": {
+        "normal": "右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。",
+        "blank": "当前图像为空白或不可用，无法可靠回答该CT影像问题，建议查看原始CT序列。",
+        "text_only": "仅凭文字问题无法判断该病例的具体CT表现，需要结合对应CT图像由医生复核。",
+        "wrong_image": "右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。",
+        "hard_wrong_image": "右肺上叶后段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。"
+      },
+      "stress_metrics": {
+        "normal_char_f1": "0.7500",
+        "blank_char_f1": "0.0870",
+        "text_only_char_f1": "0.0652",
+        "wrong_image_char_f1": "0.7500",
+        "hard_wrong_image_char_f1": "0.7500"
+      },
+      "qa_rows": [
+        {
+          "sample_id": "00942__q0001",
+          "question": "胸膜有什么异常？",
+          "answer": "双侧胸膜局部增厚。"
+        },
+        {
+          "sample_id": "00942__q0002",
+          "question": "纵隔淋巴结情况如何？",
+          "answer": "纵隔内未见明显肿大的淋巴结。"
+        },
+        {
+          "sample_id": "00942__q0003",
+          "question": "前纵隔有什么发现？",
+          "answer": "前纵隔见一长径约1.5cm的类圆形软组织密度影，中央见一条状低密度影。"
+        },
+        {
+          "sample_id": "00942__q0004",
+          "question": "右肺上叶后段有什么发现？",
+          "answer": "右肺上叶后段可见磨玻璃结节，长径约1.2cm，边界尚清，形态欠规则，边缘分叶，其内密度稍高，邻近胸膜牵拉凹陷。"
+        },
+        {
+          "sample_id": "00942__q0005",
+          "question": "双肺透亮度表现如何？",
+          "answer": "双肺透亮度增高，其内可见多个囊状无肺纹理透亮区。"
+        },
+        {
+          "sample_id": "00942__q0006",
+          "question": "右肺中叶内侧段有什么异常？",
+          "answer": "右肺中叶内侧段可见软组织密度影，长径约2.5cm，边界尚清，形态不规则，边缘分叶及毛刺，邻近胸膜多点牵拉凹陷。"
+        }
+      ]
+    },
+    {
+      "case_id": "01096",
+      "sample_id": "01096__q0006",
+      "split": "old_test",
+      "story": "安全边界样例",
+      "short": "缺证拒答 + Evidence Gate",
+      "accent": "red",
+      "takeaway": "正确图像下能命中主要要素，但额外危险征象和错图问题说明系统必须保留安全门控。",
+      "question": "右肺上叶前段有什么异常？",
+      "reference_answer": "右肺上叶前段见一混杂磨玻璃密度结节影（Img96），长径约1.2cm，边界清，边缘见分叶、毛糙，内见扭曲扩张的支气管影。",
+      "model_answer": "右肺上叶前段见一长径约1.2cm的磨玻璃结节影，边界清楚，边缘见分叶，可见毛刺，可见胸膜牵拉凹陷。",
+      "images": {
+        "overview": "assets/cases/01096/overview.png",
+        "dense": "assets/cases/01096/dense.png"
+      },
+      "slices": [
+        "assets/cases/01096/slices/slice_01.png",
+        "assets/cases/01096/slices/slice_02.png",
+        "assets/cases/01096/slices/slice_03.png",
+        "assets/cases/01096/slices/slice_04.png",
+        "assets/cases/01096/slices/slice_05.png",
+        "assets/cases/01096/slices/slice_06.png",
+        "assets/cases/01096/slices/slice_07.png",
+        "assets/cases/01096/slices/slice_08.png",
+        "assets/cases/01096/slices/slice_09.png",
+        "assets/cases/01096/slices/slice_10.png",
+        "assets/cases/01096/slices/slice_11.png",
+        "assets/cases/01096/slices/slice_12.png",
+        "assets/cases/01096/slices/slice_13.png",
+        "assets/cases/01096/slices/slice_14.png",
+        "assets/cases/01096/slices/slice_15.png",
+        "assets/cases/01096/slices/slice_16.png"
+      ],
+      "slice_rows": [
+        {
+          "index": 1,
+          "instance_number": "277",
+          "slice_location": "-31.30"
+        },
+        {
+          "index": 2,
+          "instance_number": "260",
+          "slice_location": "-48.30"
+        },
+        {
+          "index": 3,
+          "instance_number": "243",
+          "slice_location": "-65.30"
+        },
+        {
+          "index": 4,
+          "instance_number": "227",
+          "slice_location": "-81.30"
+        },
+        {
+          "index": 5,
+          "instance_number": "210",
+          "slice_location": "-98.30"
+        },
+        {
+          "index": 6,
+          "instance_number": "193",
+          "slice_location": "-115.30"
+        },
+        {
+          "index": 7,
+          "instance_number": "176",
+          "slice_location": "-132.30"
+        },
+        {
+          "index": 8,
+          "instance_number": "159",
+          "slice_location": "-149.30"
+        },
+        {
+          "index": 9,
+          "instance_number": "143",
+          "slice_location": "-165.30"
+        },
+        {
+          "index": 10,
+          "instance_number": "126",
+          "slice_location": "-182.30"
+        },
+        {
+          "index": 11,
+          "instance_number": "109",
+          "slice_location": "-199.30"
+        },
+        {
+          "index": 12,
+          "instance_number": "92",
+          "slice_location": "-216.30"
+        },
+        {
+          "index": 13,
+          "instance_number": "75",
+          "slice_location": "-233.30"
+        },
+        {
+          "index": 14,
+          "instance_number": "59",
+          "slice_location": "-249.30"
+        },
+        {
+          "index": 15,
+          "instance_number": "42",
+          "slice_location": "-266.30"
+        },
+        {
+          "index": 16,
+          "instance_number": "25",
+          "slice_location": "-283.30"
+        }
+      ],
+      "selector_target": "img96",
+      "metrics": {
+        "char_f1": "0.6972",
+        "term_recall": "78%",
+        "location_recall": "100%",
+        "density_recall": "67%",
+        "sign_recall": "67%",
+        "size_match": "100%",
+        "blank_text_drop": "0.594"
+      },
+      "matched_terms": [
+        "上叶",
+        "分叶",
+        "前段",
+        "右肺",
+        "磨玻璃",
+        "结节",
+        "边界清"
+      ],
+      "missing_terms": [
+        "毛糙",
+        "混杂磨玻璃"
+      ],
+      "extra_terms": [
+        "凹陷",
+        "毛刺",
+        "胸膜",
+        "胸膜牵拉"
+      ],
+      "element_rows": [
+        {
+          "要素": "位置",
+          "参考": "上叶、前段、右肺",
+          "预测": "上叶、前段、右肺、胸膜",
+          "命中": "上叶、前段、右肺",
+          "漏报": "无",
+          "额外": "胸膜"
+        },
+        {
+          "要素": "密度/病灶",
+          "参考": "混杂磨玻璃、磨玻璃、结节",
+          "预测": "磨玻璃、结节",
+          "命中": "磨玻璃、结节",
+          "漏报": "混杂磨玻璃",
+          "额外": "无"
+        },
+        {
+          "要素": "征象",
+          "参考": "分叶、毛糙、边界清",
+          "预测": "凹陷、分叶、毛刺、胸膜牵拉、边界清",
+          "命中": "分叶、边界清",
+          "漏报": "毛糙",
+          "额外": "凹陷、毛刺、胸膜牵拉"
+        },
+        {
+          "要素": "尺寸/层号",
+          "参考": "1.2cm、96、img96",
+          "预测": "1.2cm",
+          "命中": "1.2cm",
+          "漏报": "96",
+          "额外": "无"
+        }
+      ],
+      "stress": {
+        "normal": "右肺上叶前段见一长径约1.2cm的磨玻璃结节影，边界清楚，边缘见分叶，可见毛刺，可见胸膜牵拉凹陷。",
+        "blank": "当前图像为空白或不可用，无法可靠回答该CT影像问题，建议查看原始CT序列。",
+        "text_only": "仅凭文字问题无法判断该病例的具体CT表现，需要结合对应CT图像由医生复核。",
+        "wrong_image": "右肺上叶前段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。",
+        "hard_wrong_image": "右肺上叶前段见一长径约1.2cm的磨玻璃结节，边界清楚，边缘可见分叶，可见毛刺，可见胸膜牵拉凹陷。"
+      },
+      "stress_metrics": {
+        "normal_char_f1": "0.6972",
+        "blank_char_f1": "0.1031",
+        "text_only_char_f1": "0.0825",
+        "wrong_image_char_f1": "0.6789",
+        "hard_wrong_image_char_f1": "0.6789"
+      },
+      "qa_rows": [
+        {
+          "sample_id": "01096__q0001",
+          "question": "胸腔和胸膜表现如何？",
+          "answer": "双侧胸腔无积液，双侧胸膜局部增厚。"
+        },
+        {
+          "sample_id": "01096__q0002",
+          "question": "纵隔淋巴结情况如何？",
+          "answer": "纵隔内未见明显肿大的淋巴结。"
+        },
+        {
+          "sample_id": "01096__q0003",
+          "question": "支气管有何异常？",
+          "answer": "双肺下叶部分支气管轻度扩张，左肺下叶部分支气管内见片状密度增高影。"
+        },
+        {
+          "sample_id": "01096__q0004",
+          "question": "右肺下叶有什么发现？",
+          "answer": "右肺下叶见斑点状致密影。"
+        },
+        {
+          "sample_id": "01096__q0005",
+          "question": "双肺还有哪些结节或密度影？",
+          "answer": "双肺可见数个磨玻璃密度影及实性小结节影，长径均小于0.6cm，边界清。"
+        },
+        {
+          "sample_id": "01096__q0006",
+          "question": "右肺上叶前段有什么异常？",
+          "answer": "右肺上叶前段见一混杂磨玻璃密度结节影（Img96），长径约1.2cm，边界清，边缘见分叶、毛糙，内见扭曲扩张的支气管影。"
+        },
+        {
+          "sample_id": "01096__q0007",
+          "question": "双肺实质有其他异常表现吗？",
+          "answer": "双肺见散在斑片、条索影。"
+        }
+      ]
+    }
+  ],
+  "figures": [
+    {
+      "name": "Figure 1 clinician review workflow",
+      "path": "assets/figures/Figure_1_clinician_review_workflow.png"
+    },
+    {
+      "name": "Figure 2 structured coverage review queue",
+      "path": "assets/figures/Figure_2_structured_coverage_review_queue.png"
+    },
+    {
+      "name": "Figure 3 positive case 05296",
+      "path": "assets/figures/Figure_3_positive_case_05296.png"
+    },
+    {
+      "name": "Figure 4 clinical element review 00942",
+      "path": "assets/figures/Figure_4_clinical_element_review_00942.png"
+    },
+    {
+      "name": "Figure 5 missing evidence refusal",
+      "path": "assets/figures/Figure_5_missing_evidence_refusal.png"
+    },
+    {
+      "name": "Figure 6 real case visual safety",
+      "path": "assets/figures/Figure_6_real_case_visual_safety.png"
+    },
+    {
+      "name": "Figure 7 evidence gate admission status",
+      "path": "assets/figures/Figure_7_evidence_gate_admission_status.png"
+    },
+    {
+      "name": "Table 1 clinical utility boundary",
+      "path": "assets/figures/Table_1_clinical_utility_boundary.png"
+    }
+  ]
+}
