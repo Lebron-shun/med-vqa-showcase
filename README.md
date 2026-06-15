@@ -1,54 +1,89 @@
-# Med-VQA Lung CT Showcase
+# 基于多模态大模型的肺部CT影像问答解读系统
 
-This repository hosts a static, de-identified showcase page for the project:
+这是一个面向竞赛作品展示的静态网页仓库，用于公开展示“基于多模态大模型的肺部CT影像问答解读系统”的核心功能、典型病例和安全边界。
 
-**基于多模态大模型的肺部CT影像问答解读系统**
+在线展示地址：
 
-The page is designed as an online companion for a biomedical engineering competition report. It demonstrates a research prototype for lung CT question answering, report interpretation, clinical element review, missing-evidence refusal, and Evidence Gate safety control.
+[https://lebron-shun.github.io/med-vqa-showcase/](https://lebron-shun.github.io/med-vqa-showcase/)
 
-## Live Demo
+## 项目简介
 
-After GitHub Pages is enabled, the page will be available at:
+本项目面向肺部CT影像问答、报告解读和医生复核辅助等场景，构建了一套基于多模态大模型的肺部CT影像问答解读原型系统。系统融合DICOM影像、放射学报告、中文问答数据和结构化临床要素，围绕“病灶在哪里、大小多少、密度如何、是否存在危险征象”等问题生成中文解释，并对模型回答进行临床要素核查和安全审计。
 
-```text
-https://Lebron-shun.github.io/med-vqa-showcase/
+本仓库是该系统的公开展示页，重点展示：
+
+- 肺部CT病例的 overview montage、dense axial montage 和渲染切片浏览；
+- 典型中文问答、参考答案和模型回答；
+- 位置、大小、密度、征象等临床要素核查结果；
+- 缺失图像或证据不足时的保守拒答；
+- Evidence Gate 机制对未达标视觉证据的安全限制。
+
+## 展示病例
+
+网页按照最终报告中的展示顺序组织三个脱敏病例：
+
+| 病例编号 | 展示定位 | 重点能力 |
+| --- | --- | --- |
+| 05296 | 正向能力主例 | 围绕明确问题组织“位置 + 病灶 + 大小”信息 |
+| 00942 | 临床要素核查 | 展示回答、结构化要素对照和额外危险征象复核 |
+| 01096 | 安全边界样例 | 展示缺证拒答、危险征象幻觉提示和 Evidence Gate 必要性 |
+
+## 当前系统定位
+
+本系统不是自动诊断模型，也不替代放射科医生阅片。当前更适合定位为医生复核辅助和医学AI安全质控原型，可用于：
+
+- 放射学报告结构化；
+- 肺部CT病例教学和复盘；
+- 基于已验证证据的中文问答解释；
+- 模型回答中的临床要素一致性核查；
+- 缺失输入、错图风险和危险征象幻觉的安全审计。
+
+## 已公开内容
+
+本仓库仅包含可公开展示的静态资源：
+
+- `index.html`：静态展示网页；
+- `assets/cases/`：脱敏病例的渲染PNG图像；
+- `assets/figures/`：报告配套图表；
+- `showcase_payload_public.json`：公开展示用病例、问答和指标数据；
+- `PRIVACY_AND_SAFETY.md`：隐私与安全说明；
+- `LICENSE`：开源许可证。
+
+## 不包含的内容
+
+为保护数据安全和项目隐私，本仓库不包含：
+
+- 原始DICOM文件；
+- 患者身份信息；
+- DICOM UID、原始文件名或服务器路径；
+- 模型权重；
+- 训练数据集；
+- 私有评估输出；
+- 服务器账号、密码或内部路径。
+
+## 医学安全声明
+
+本网页仅用于竞赛作品展示、科研交流和医学AI安全性说明，不提供任何临床诊断服务。网页中的模型回答、指标和病例展示均不能作为临床结论使用。任何医学判断都必须由具备资质的医生结合原始影像、病史和临床信息进行复核。
+
+项目的核心口径是：
+
+> 展示可用的辅助能力，同时明确不可用于独立诊断的边界。
+
+## 本地预览
+
+可以直接用浏览器打开 `index.html`，也可以在仓库根目录运行：
+
+```bash
+python -m http.server 8000
 ```
 
-## What Is Included
+然后访问：
 
-- Static HTML/CSS/JavaScript page.
-- De-identified case IDs used in the report: `05296`, `00942`, `01096`.
-- Rendered CT PNG assets:
-  - overview montage
-  - dense axial montage
-  - DICOM-derived slice PNGs
-- QA examples, reference answers, model answers, and summary metrics.
-- Report figures used for the public showcase.
+```text
+http://127.0.0.1:8000/
+```
 
-## What Is Not Included
-
-- No raw DICOM files.
-- No patient identity information.
-- No server paths, DICOM UIDs, or local absolute paths.
-- No model weights, training datasets, or private evaluation outputs.
-
-## Medical Disclaimer
-
-This project is a research and education prototype. The web page is not a medical device and does not provide clinical diagnosis. All displayed answers and metrics are for competition demonstration and research discussion only. Any clinical interpretation must be reviewed by qualified radiologists using the original imaging data and clinical context.
-
-## Project Positioning
-
-The system is positioned as a doctor-review-oriented auxiliary workflow:
-
-- report structuring
-- evidence-driven Chinese QA explanation
-- clinical element consistency review
-- missing input refusal
-- model safety audit and Evidence Gate
-
-It is not presented as an autonomous lung nodule diagnosis system.
-
-## Repository Structure
+## 目录结构
 
 ```text
 .
@@ -58,21 +93,10 @@ It is not presented as an autonomous lung nodule diagnosis system.
 │   └── figures/
 ├── showcase_payload_public.json
 ├── README.md
-├── LICENSE
-└── PRIVACY_AND_SAFETY.md
+├── PRIVACY_AND_SAFETY.md
+└── LICENSE
 ```
 
-## Local Preview
+## 许可证
 
-Open `index.html` directly in a browser, or run:
-
-```bash
-python -m http.server 8000
-```
-
-Then visit:
-
-```text
-http://127.0.0.1:8000/
-```
-
+本仓库中的网页代码采用 MIT License。病例图像和展示数据仅用于本项目竞赛展示与研究说明，使用时应遵守医学数据隐私和伦理要求。
